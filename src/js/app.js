@@ -8,13 +8,26 @@ var iitSnakeComponent = {
     transclude: true
 };
 
-function iitSnakeController(iitSnakeGame) {
+function iitSnakeController(iitSnakeGame, iitSnakeDirections) {
     var vm = this;
     vm.rows = 40;
     vm.cols = 60;
+    vm.onKeypress = onKeypress;
 
     iitSnakeGame.init(vm.rows, vm.cols);
     vm.grid = iitSnakeGame.grid;
+    
+    function onKeypress($event) {
+        var keyMappings = {};
+        keyMappings[38] = iitSnakeDirections.UP;
+        keyMappings[39] = iitSnakeDirections.RIGHT;
+        keyMappings[40] = iitSnakeDirections.DOWN;
+        keyMappings[37] = iitSnakeDirections.LEFT;
+        var direction = keyMappings[$event.keyCode];
+        if (direction === undefined)
+            return;
+        iitSnakeGame.setDirection(direction);
+    }
 }
 /////////////////////////////////////////////////////////////
 //IIT-SNAKE-CELL-COMPONENT
@@ -44,6 +57,15 @@ var iitSnakeCellStatuses = {
 /////////////////////////////////////////////////////////////
 //IIT-SNAKE-CELL-STATUSES
 /////////////////////////////////////////////////////////////
+var iitSnakeDirections = {
+    UP: 0,
+    RIGHT: 1,
+    DOWN: 2,
+    LEFT: 3
+};
+/////////////////////////////////////////////////////////////
+//IIT-SNAKE-CELL-STATUSES
+/////////////////////////////////////////////////////////////
 function iitSnakeCellStatusesFilter(iitSnakeCellStatuses) {
     return function (input) {
         var mappings = {};
@@ -56,12 +78,13 @@ function iitSnakeCellStatusesFilter(iitSnakeCellStatuses) {
 /////////////////////////////////////////////////////////////
 //IIT-SNAKE-GAME
 /////////////////////////////////////////////////////////////
-function iitSnakeGame(iitSnakeCellStatuses, $interval) {
+function iitSnakeGame(iitSnakeCellStatuses, iitSnakeDirections, $interval) {
     var game = {
         rows: 0,
         cols: 0,
         grid: [],
-        snake: [{x: 2, y: 0}, {x: 1, y: 0}, {x: 0, y: 0}]
+        snake: [{x: 2, y: 0}, {x: 1, y: 0}, {x: 0, y: 0}],
+        direction: iitSnakeDirections.UP
     };
     game.init = function (rows, cols) {
         game.rows = rows;
@@ -79,8 +102,14 @@ function iitSnakeGame(iitSnakeCellStatuses, $interval) {
     };
     
     game.update = function() {
-        var direction = {y: 1, x:0};
-        var res = game.move(direction);
+        var directionMappings = {};
+        directionMappings[iitSnakeDirections.UP] = {x: -1, y:0};
+        directionMappings[iitSnakeDirections.RIGHT] = {x:0, y: 1};
+        directionMappings[iitSnakeDirections.DOWN] = {x: 1, y:0};
+        directionMappings[iitSnakeDirections.LEFT] = {x:0, y: -1};
+        
+        var delta = directionMappings[game.direction];
+        var res = game.move(delta);
         var head = res.head;
         var tail = res.tail;
         game.grid[head.x][head.y] = iitSnakeCellStatuses.SNAKE;
@@ -90,10 +119,19 @@ function iitSnakeGame(iitSnakeCellStatuses, $interval) {
     
     game.move = function(delta) {
         var head = game.snake[0];
-        var newHead = {x:(head.x+delta.x + game.rows)%game.rows, y: (head.y+delta.y+game.cols)%game.cols};
+        var newX = (head.x+delta.x + game.rows)%game.rows;
+        var newY = (head.y+delta.y+game.cols)%game.cols;
+        var newHead = {x: newX, y: newY};
         game.snake.unshift(newHead);
         var tail = game.snake.pop();
         return {head: newHead, tail: tail};
+    };
+    
+    game.setDirection = function(direction) {
+        //Terrible hack!!!!
+        if (Math.abs(game.direction - direction) === 2)
+            return;
+        game.direction = direction;
     };
     
     return game;
@@ -105,5 +143,6 @@ angular.module('snake', [])
         .component('iitSnake', iitSnakeComponent)
         .component('iitSnakeCell', iitSnakeCellComponent)
         .constant('iitSnakeCellStatuses', iitSnakeCellStatuses)
+        .constant('iitSnakeDirections', iitSnakeDirections)
         .filter('iitSnakeCellStatusesFilter', iitSnakeCellStatusesFilter)
         .service('iitSnakeGame', iitSnakeGame);

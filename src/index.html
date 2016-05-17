@@ -11,14 +11,15 @@
     <body ng-app="snake">
     <iit-snake>
     </iit-snake>
-    
     <script type="text/ng-template" id="iitSnakeComponent.html">
-        <div class="iit-snake-row" ng-repeat="row in vm.grid">
-            <iit-snake-cell ng-repeat="status in row track by $index" status="status"></iit-snake-cell>
+        <div ng-keydown="vm.onKeypress($event)"  tabindex="0">
+            <div class="iit-snake-row" ng-repeat="row in vm.grid">
+                <iit-snake-cell ng-repeat="status in row track by $index" status="status"></iit-snake-cell>
+            </div>
         </div>
     </script>
-    
+
     <script type="text/ng-template" id="iitSnakeCellComponent.html"><div class="{{vm.status | iitSnakeCellStatusesFilter}}-cell"></div></script>
-    
+
 </body>
 </html>
