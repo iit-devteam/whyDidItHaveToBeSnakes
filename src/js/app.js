@@ -10,8 +10,8 @@ var iitSnakeComponent = {
 
 function iitSnakeController(iitSnakeGame) {
     var vm = this;
-    vm.rows = 20;
-    vm.cols = 50;
+    vm.rows = 40;
+    vm.cols = 60;
 
     iitSnakeGame.init(vm.rows, vm.cols);
     vm.grid = iitSnakeGame.grid;
@@ -80,9 +80,9 @@ function iitSnakeGame(iitSnakeCellStatuses, $interval) {
     
     game.update = function() {
         var direction = {y: 1, x:0};
-        game.move(direction);
-        var head = game.snake[0];
-        var tail = game.snake.last();
+        var res = game.move(direction);
+        var head = res.head;
+        var tail = res.tail;
         game.grid[head.x][head.y] = iitSnakeCellStatuses.SNAKE;
         game.grid[tail.x][tail.y] = iitSnakeCellStatuses.EMPTY;
         
@@ -90,9 +90,10 @@ function iitSnakeGame(iitSnakeCellStatuses, $interval) {
     
     game.move = function(delta) {
         var head = game.snake[0];
-        var newHead = {x:head.x+delta.x, y:head.y+delta.y};
+        var newHead = {x:(head.x+delta.x + game.rows)%game.rows, y: (head.y+delta.y+game.cols)%game.cols};
         game.snake.unshift(newHead);
-        game.snake.pop();
+        var tail = game.snake.pop();
+        return {head: newHead, tail: tail};
     };
     
     return game;
@@ -106,10 +107,3 @@ angular.module('snake', [])
         .constant('iitSnakeCellStatuses', iitSnakeCellStatuses)
         .filter('iitSnakeCellStatusesFilter', iitSnakeCellStatusesFilter)
         .service('iitSnakeGame', iitSnakeGame);
-
-
-if (!Array.prototype.last){
-    Array.prototype.last = function(){
-        return this[this.length - 1];
-    };
-};

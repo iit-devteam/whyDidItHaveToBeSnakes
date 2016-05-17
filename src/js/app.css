@@ -45,6 +45,12 @@ table {
 body {
     background-color: grey;
 }
+
+iit-snake {
+    display: block;
+    margin: 20px;
+}
+
 .empty-cell {
     background-color: white;
 }
@@ -58,11 +64,11 @@ body {
 }
 
 iit-snake-cell > div {
-    width: 10px;
-    height: 10px;
+    width: 8px;
+    height: 8px;
     display: inline-block;
 }
 
 .iit-snake-row{
-    height: 10px;
+    height: 8px;
 }
