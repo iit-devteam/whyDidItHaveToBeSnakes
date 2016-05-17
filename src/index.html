@@ -4,22 +4,44 @@
         <title>Snake</title>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <link href="/Snake/favicon.ico" rel="shortcut icon" type="image/vnd.microsoft.icon">
         <link rel="stylesheet" type="text/css" href="js/app.css">
         <script src="js/vendors/angular.min.js"></script>
         <script src="js/app.js"></script>
     </head>
     <body ng-app="snake">
-    <iit-snake>
-    </iit-snake>
+    <iit-snake></iit-snake>
+
     <script type="text/ng-template" id="iitSnakeComponent.html">
         <div ng-keydown="vm.onKeypress($event)"  tabindex="0">
-            <div class="iit-snake-row" ng-repeat="row in vm.grid">
+            <div class="iit-snake-row" ng-repeat="row in vm.iitSnakeGame.grid">
                 <iit-snake-cell ng-repeat="status in row track by $index" status="status"></iit-snake-cell>
+            </div>
+            <iit-snake-commands></iit-snake-commands>
+        </div>
+
+    </script>
+
+    <script type="text/ng-template" id="iitSnakeCellComponent.html"><div class="{{vm.status | iitSnakeCellStatusesFilter}}-cell"></div></script>
+
+    <script type="text/ng-template" id="iitSnakeCommands.html">
+        <div>
+            <div>
+                <button type="button" ng-click="vm.stop()" >Pause</button>
+                <button type="button" ng-click="vm.start()" >Play</button>
+            </div>
+            <hr>
+            <div>
+                <form ng-submit="vm.apply()">
+                    ROWS: <input type="text" ng-model="vm.configs.rows"> 
+                    COLS: <input type="text" ng-model="vm.configs.cols">
+                    <select ng-model="vm.configs.difficulty" ng-options="d.value as d.label for d in vm.difficultyList"></select>
+                    <button type="submit">Apply</button>
+                </form>
             </div>
         </div>
     </script>
 
-    <script type="text/ng-template" id="iitSnakeCellComponent.html"><div class="{{vm.status | iitSnakeCellStatusesFilter}}-cell"></div></script>
 
 </body>
 </html>
