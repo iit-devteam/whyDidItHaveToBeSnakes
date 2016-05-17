@@ -1,0 +1,22 @@
+{
+  "name": "snake",
+  "description": "snake, why'd it have to be snakes?",
+  "main": "src/js/app.js",
+  "authors": [
+    "iit-federico-bozzini <federico.bozzini@iit.it>"
+  ],
+  "license": "ISC",
+  "homepage": "https://github.com/iit-devteam/whyDidItHaveToBeSnakes",
+  "moduleType": [],
+  "private": true,
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "angular": "^1.5.5"
+  }
+}

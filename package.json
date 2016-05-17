@@ -1,0 +1,28 @@
+{
+  "name": "snake",
+  "version": "1.0.0",
+  "description": "snake, why'd it have to be snakes?",
+  "main": "src/js/app.js",
+  "dependencies": {
+    "gulp": "^3.9.1"
+  },
+  "devDependencies": {
+    "del": "^2.2.0",
+    "gulp": "^3.9.1",
+    "gulp-concat": "^2.6.0",
+    "gulp-sourcemaps": "^1.6.0"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/iit-devteam/whyDidItHaveToBeSnakes.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/iit-devteam/whyDidItHaveToBeSnakes/issues"
+  },
+  "homepage": "https://github.com/iit-devteam/whyDidItHaveToBeSnakes#readme"
+}
