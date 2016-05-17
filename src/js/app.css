@@ -60,6 +60,10 @@ iit-snake {
 }
 
 .food-cell {
+    background-color: brown;
+}
+
+.death-cell {
     background-color: red;
 }
 

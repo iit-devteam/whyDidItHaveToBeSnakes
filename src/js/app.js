@@ -52,7 +52,8 @@ function iitSnakeCellController(iitSnakeCellStatuses) {
 var iitSnakeCellStatuses = {
     EMPTY: 0,
     SNAKE: 1,
-    FOOD: 2
+    FOOD: 2,
+    DEATH: 3
 };
 /////////////////////////////////////////////////////////////
 //IIT-SNAKE-CELL-STATUSES
@@ -72,6 +73,7 @@ function iitSnakeCellStatusesFilter(iitSnakeCellStatuses) {
         mappings[iitSnakeCellStatuses.EMPTY] = 'empty';
         mappings[iitSnakeCellStatuses.SNAKE] = 'snake';
         mappings[iitSnakeCellStatuses.FOOD] = 'food';
+        mappings[iitSnakeCellStatuses.DEATH] = 'death';
         return mappings[input];
     };
 }
@@ -84,7 +86,7 @@ function iitSnakeGame(iitSnakeCellStatuses, iitSnakeDirections, $interval) {
         cols: 0,
         grid: [],
         snake: [{x: 2, y: 0}, {x: 1, y: 0}, {x: 0, y: 0}],
-        direction: iitSnakeDirections.UP
+        direction: iitSnakeDirections.RIGHT
     };
     game.init = function (rows, cols) {
         game.rows = rows;
@@ -93,9 +95,18 @@ function iitSnakeGame(iitSnakeCellStatuses, iitSnakeDirections, $interval) {
         game.grid = game.createGrid(rows, cols);
 
         game.drawSnake();
-        game.grid[game.food.x][game.food.y] = iitSnakeCellStatuses.FOOD;
+        game.drawFood();
 
-        $interval(game.update, 100);
+        game.start();
+    };
+
+    game.start = function () {
+        game.execution = $interval(game.update, 80);
+    };
+
+    game.stop = function () {
+        $interval.cancel(game.execution);
+        game.execution = undefined;
     };
 
     game.update = function () {
@@ -103,32 +114,35 @@ function iitSnakeGame(iitSnakeCellStatuses, iitSnakeDirections, $interval) {
         game.move();
         game.bite();
         game.drawSnake();
-        game.grid[game.food.x][game.food.y] = iitSnakeCellStatuses.FOOD;
+        game.drawFood();
 
         game.moved = false;
     };
 
     game.move = function () {
-        var directionMappings = {};
-        directionMappings[iitSnakeDirections.UP] = {x: -1, y: 0};
-        directionMappings[iitSnakeDirections.RIGHT] = {x: 0, y: 1};
-        directionMappings[iitSnakeDirections.DOWN] = {x: 1, y: 0};
-        directionMappings[iitSnakeDirections.LEFT] = {x: 0, y: -1};
-
-        var delta = directionMappings[game.direction];
+        var delta = game.getDelta();
         var head = game.snake[0];
         var newX = (head.x + delta.x + game.rows) % game.rows;
         var newY = (head.y + delta.y + game.cols) % game.cols;
         var newHead = {x: newX, y: newY};
         game.snake.unshift(newHead);
-        var tail = game.snake.pop();
-        return {head: newHead, tail: tail};
+        game.snake.pop();
     };
 
     game.bite = function () {
+        function isBitingItself(head) {
+            var snakeBody = game.snake.slice(1);
+            return (snakeBody.some(function (s) {
+                return game.sameCell(s, head);
+            }));
+        }
         var head = game.snake[0];
         if (game.sameCell(head, game.food)) {
             game.eat();
+        }
+        if (isBitingItself(head)) {
+            game.grid[head.x][head.y] = iitSnakeCellStatuses.DEATH;
+            game.stop();
         }
     };
 
@@ -142,7 +156,17 @@ function iitSnakeGame(iitSnakeCellStatuses, iitSnakeDirections, $interval) {
         game.direction = direction;
         game.moved = true;
     };
+    
+    game.getDelta = function() {
+        var directionMappings = {};
+        directionMappings[iitSnakeDirections.UP] = {x: -1, y: 0};
+        directionMappings[iitSnakeDirections.RIGHT] = {x: 0, y: 1};
+        directionMappings[iitSnakeDirections.DOWN] = {x: 1, y: 0};
+        directionMappings[iitSnakeDirections.LEFT] = {x: 0, y: -1};
 
+        return directionMappings[game.direction];
+    }
+ 
     game.eat = function () {
         var tail = game.snake.last();
         game.snake.push(tail);
@@ -167,8 +191,13 @@ function iitSnakeGame(iitSnakeCellStatuses, iitSnakeDirections, $interval) {
 
     game.drawSnake = function () {
         game.snake.forEach(function (s) {
-            game.grid[s.x][s.y] = iitSnakeCellStatuses.SNAKE;
+            if (game.grid[s.x][s.y] === iitSnakeCellStatuses.EMPTY)
+                game.grid[s.x][s.y] = iitSnakeCellStatuses.SNAKE;
         });
+    };
+
+    game.drawFood = function () {
+        game.grid[game.food.x][game.food.y] = iitSnakeCellStatuses.FOOD;
     };
 
     game.createGrid = function (rows, cols) {
