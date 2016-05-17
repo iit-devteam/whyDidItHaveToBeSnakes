@@ -89,14 +89,11 @@ function iitSnakeGame(iitSnakeCellStatuses, iitSnakeDirections, $interval) {
     game.init = function (rows, cols) {
         game.rows = rows;
         game.cols = cols;
-        for (var x = 0; x < rows; x++) {
-            game.grid.push([]);
-            for (var y = 0; y < cols; y++) {
-                game.grid[x].push(iitSnakeCellStatuses.EMPTY);
-            }
-        }
-        var head = game.snake[0];
-        game.grid[head.x][head.y] = iitSnakeCellStatuses.SNAKE;
+        game.food = game.getRandomFood();
+        game.grid = game.createGrid(rows, cols);
+        
+        game.drawSnake();
+        game.grid[game.food.x][game.food.y] = iitSnakeCellStatuses.FOOD;
         
         $interval(game.update, 100);
     };
@@ -109,12 +106,17 @@ function iitSnakeGame(iitSnakeCellStatuses, iitSnakeDirections, $interval) {
         directionMappings[iitSnakeDirections.LEFT] = {x:0, y: -1};
         
         var delta = directionMappings[game.direction];
+        game.deleteSnake();
         var res = game.move(delta);
         var head = res.head;
         var tail = res.tail;
-        game.grid[head.x][head.y] = iitSnakeCellStatuses.SNAKE;
-        game.grid[tail.x][tail.y] = iitSnakeCellStatuses.EMPTY;
+        if (game.sameCell(head, game.food)) {
+            game.eat(tail);
+        } 
+        game.drawSnake();
+        game.grid[game.food.x][game.food.y] = iitSnakeCellStatuses.FOOD;
         
+        game.moved = false;
     };
     
     game.move = function(delta) {
@@ -129,10 +131,57 @@ function iitSnakeGame(iitSnakeCellStatuses, iitSnakeDirections, $interval) {
     
     game.setDirection = function(direction) {
         //Terrible hack!!!!
-        if (Math.abs(game.direction - direction) === 2)
+        function isOppositeDirection() {
+            return Math.abs(game.direction - direction) === 2;
+        }
+        if (isOppositeDirection(direction) || game.moved)
             return;
         game.direction = direction;
+        game.moved = true;
     };
+    
+    game.eat = function(tail) {
+        game.snake.push(tail);
+        game.food = game.getRandomFood();
+    }
+    
+    game.getRandomFood = function() {
+        var x = getRandomInt(0, game.rows);
+        var y = getRandomInt(0, game.cols);
+        return {x: x, y: y};
+    };
+    
+    game.sameCell = function(c1, c2) {
+        return c1.x === c2.x && c1.y === c2.y;
+    };
+    
+    game.deleteSnake = function() {
+        game.snake.forEach(function(s) {
+           game.grid[s.x][s.y] = iitSnakeCellStatuses.EMPTY;
+        });
+    };
+    
+    game.drawSnake = function() {
+        game.snake.forEach(function(s) {
+           game.grid[s.x][s.y] = iitSnakeCellStatuses.SNAKE;
+        });
+    };
+    
+    game.createGrid = function(rows, cols) {
+        var grid = [];
+        for (var x = 0; x < rows; x++) {
+            grid.push([]);
+            for (var y = 0; y < cols; y++) {
+                grid[x].push(iitSnakeCellStatuses.EMPTY);
+            }
+        }
+        return grid;
+    }
+    
+    function getRandomInt(min, max) {
+        return Math.floor(Math.random() * (max - min)) + min;
+    }
+    
     
     return game;
 }
