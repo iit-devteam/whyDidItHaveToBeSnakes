@@ -4,10 +4,21 @@
         <title>Snake</title>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <link rel="stylesheet" type="text/css" href="js/app.css">
         <script src="js/vendors/angular.min.js"></script>
         <script src="js/app.js"></script>
     </head>
     <body ng-app="snake">
-        <iit-snake></iit-snake>
-    </body>
+    <iit-snake>
+    </iit-snake>
+    
+    <script type="text/ng-template" id="iitSnakeComponent.html">
+        <div class="iit-snake-row" ng-repeat="row in vm.grid">
+            <iit-snake-cell ng-repeat="status in row track by $index" status="status"></iit-snake-cell>
+        </div>
+    </script>
+    
+    <script type="text/ng-template" id="iitSnakeCellComponent.html"><div class="{{vm.status | iitSnakeCellStatusesFilter}}-cell"></div></script>
+    
+</body>
 </html>
