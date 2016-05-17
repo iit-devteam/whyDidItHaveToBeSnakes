@@ -71,4 +71,5 @@ iit-snake-cell > div {
 
 .iit-snake-row{
     height: 8px;
+    line-height: 0;
 }
