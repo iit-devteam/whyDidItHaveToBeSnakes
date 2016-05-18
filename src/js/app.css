@@ -77,3 +77,7 @@ iit-snake-cell > div {
     height: 8px;
     line-height: 0;
 }
+
+div:focus {
+    outline: none;
+}
