@@ -178,7 +178,7 @@ function iitSnakeGame(iitSnakeCellStatuses, iitSnakeDirections, $interval) {
         drawSnake();
 
         game.moved = false;
-    };
+    }
 
     function move() {
         var delta = getDelta();
@@ -188,7 +188,7 @@ function iitSnakeGame(iitSnakeCellStatuses, iitSnakeDirections, $interval) {
         var newHead = {x: newX, y: newY};
         game.snake.unshift(newHead);
         game.snake.pop();
-    };
+    }
 
     function bite() {
         function isBitingItself(head) {
@@ -208,7 +208,7 @@ function iitSnakeGame(iitSnakeCellStatuses, iitSnakeDirections, $interval) {
             game.grid[head.x][head.y] = iitSnakeCellStatuses.DEATH;
             game.stop();
         }
-    };
+    }
 
     function getDelta() {
         var directionMappings = {};
@@ -218,40 +218,40 @@ function iitSnakeGame(iitSnakeCellStatuses, iitSnakeDirections, $interval) {
         directionMappings[iitSnakeDirections.LEFT] = {x: 0, y: -1};
 
         return directionMappings[game.direction];
-    };
+    }
 
     function eat() {
         var tail = game.snake.last();
         game.snake.push(tail);
         game.food = getRandomFood();
-    };
+    }
 
     function getRandomFood() {
         var x = getRandomInt(0, game.rows);
         var y = getRandomInt(0, game.cols);
         return {x: x, y: y};
-    };
+    }
 
     function sameCell(c1, c2) {
         return c1.x === c2.x && c1.y === c2.y;
-    };
+    }
 
     function deleteSnake() {
         game.snake.forEach(function (s) {
             game.grid[s.x][s.y] = iitSnakeCellStatuses.EMPTY;
         });
-    };
+    }
 
     function drawSnake() {
         game.snake.forEach(function (s) {
             if (game.grid[s.x][s.y] === iitSnakeCellStatuses.EMPTY)
                 game.grid[s.x][s.y] = iitSnakeCellStatuses.SNAKE;
         });
-    };
+    }
 
     function drawFood() {
         game.grid[game.food.x][game.food.y] = iitSnakeCellStatuses.FOOD;
-    };
+    }
 
     function getGrid(rows, cols) {
         var grid = [];
@@ -262,7 +262,7 @@ function iitSnakeGame(iitSnakeCellStatuses, iitSnakeDirections, $interval) {
             }
         }
         return grid;
-    };
+    }
 }
 /////////////////////////////////////////////////////////////
 //IIT-SNAKE-MODULE
