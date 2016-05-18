@@ -130,15 +130,15 @@ function iitSnakeGame(iitSnakeCellStatuses, iitSnakeDirections, $interval) {
         game.difficulty = difficulty;
         game.rows = rows;
         game.cols = cols;
-        game.food = game.getRandomFood();
-        game.grid = game.createGrid(rows, cols);
+        game.food = getRandomFood();
+        game.grid = getGrid(rows, cols);
 
 
         game.snake = [{x: 0, y: 0}];
         game.direction = iitSnakeDirections.RIGHT;
 
-        game.drawSnake();
-        game.drawFood();
+        drawSnake();
+        drawFood();
         game.execution = undefined;
     };
 
@@ -146,7 +146,7 @@ function iitSnakeGame(iitSnakeCellStatuses, iitSnakeDirections, $interval) {
         if (game.execution !== undefined)
             return;
 
-        game.execution = $interval(game.update, game.difficulty);
+        game.execution = $interval(update, game.difficulty);
     };
 
     game.stop = function () {
@@ -155,46 +155,6 @@ function iitSnakeGame(iitSnakeCellStatuses, iitSnakeDirections, $interval) {
 
         $interval.cancel(game.execution);
         game.execution = undefined;
-    };
-
-    game.update = function () {
-        game.deleteSnake();
-        game.move();
-        game.bite();
-        game.drawFood();
-        game.drawSnake();
-
-        game.moved = false;
-    };
-
-    game.move = function () {
-        var delta = game.getDelta();
-        var head = game.snake[0];
-        var newX = (head.x + delta.x + game.rows) % game.rows;
-        var newY = (head.y + delta.y + game.cols) % game.cols;
-        var newHead = {x: newX, y: newY};
-        game.snake.unshift(newHead);
-        game.snake.pop();
-    };
-
-    game.bite = function () {
-        function isBitingItself(head) {
-            if (game.snake.length < 5)
-                return false;
-
-            var snakeBody = game.snake.slice(1);
-            return (snakeBody.some(function (s) {
-                return game.sameCell(s, head);
-            }));
-        }
-        var head = game.snake[0];
-        if (game.sameCell(head, game.food)) {
-            game.eat();
-        }
-        if (isBitingItself(head)) {
-            game.grid[head.x][head.y] = iitSnakeCellStatuses.DEATH;
-            game.stop();
-        }
     };
 
     game.setDirection = function (direction) {
@@ -208,7 +168,49 @@ function iitSnakeGame(iitSnakeCellStatuses, iitSnakeDirections, $interval) {
         game.moved = true;
     };
 
-    game.getDelta = function () {
+    return game;
+
+    function update() {
+        deleteSnake();
+        move();
+        bite();
+        drawFood();
+        drawSnake();
+
+        game.moved = false;
+    };
+
+    function move() {
+        var delta = getDelta();
+        var head = game.snake[0];
+        var newX = (head.x + delta.x + game.rows) % game.rows;
+        var newY = (head.y + delta.y + game.cols) % game.cols;
+        var newHead = {x: newX, y: newY};
+        game.snake.unshift(newHead);
+        game.snake.pop();
+    };
+
+    function bite() {
+        function isBitingItself(head) {
+            if (game.snake.length < 5)
+                return false;
+
+            var snakeBody = game.snake.slice(1);
+            return (snakeBody.some(function (s) {
+                return sameCell(s, head);
+            }));
+        }
+        var head = game.snake[0];
+        if (sameCell(head, game.food)) {
+            eat();
+        }
+        if (isBitingItself(head)) {
+            game.grid[head.x][head.y] = iitSnakeCellStatuses.DEATH;
+            game.stop();
+        }
+    };
+
+    function getDelta() {
         var directionMappings = {};
         directionMappings[iitSnakeDirections.UP] = {x: -1, y: 0};
         directionMappings[iitSnakeDirections.RIGHT] = {x: 0, y: 1};
@@ -218,40 +220,40 @@ function iitSnakeGame(iitSnakeCellStatuses, iitSnakeDirections, $interval) {
         return directionMappings[game.direction];
     };
 
-    game.eat = function () {
+    function eat() {
         var tail = game.snake.last();
         game.snake.push(tail);
-        game.food = game.getRandomFood();
+        game.food = getRandomFood();
     };
 
-    game.getRandomFood = function () {
+    function getRandomFood() {
         var x = getRandomInt(0, game.rows);
         var y = getRandomInt(0, game.cols);
         return {x: x, y: y};
     };
 
-    game.sameCell = function (c1, c2) {
+    function sameCell(c1, c2) {
         return c1.x === c2.x && c1.y === c2.y;
     };
 
-    game.deleteSnake = function () {
+    function deleteSnake() {
         game.snake.forEach(function (s) {
             game.grid[s.x][s.y] = iitSnakeCellStatuses.EMPTY;
         });
     };
 
-    game.drawSnake = function () {
+    function drawSnake() {
         game.snake.forEach(function (s) {
             if (game.grid[s.x][s.y] === iitSnakeCellStatuses.EMPTY)
                 game.grid[s.x][s.y] = iitSnakeCellStatuses.SNAKE;
         });
     };
 
-    game.drawFood = function () {
+    function drawFood() {
         game.grid[game.food.x][game.food.y] = iitSnakeCellStatuses.FOOD;
     };
 
-    game.createGrid = function (rows, cols) {
+    function getGrid(rows, cols) {
         var grid = [];
         for (var x = 0; x < rows; x++) {
             grid.push([]);
@@ -261,8 +263,6 @@ function iitSnakeGame(iitSnakeCellStatuses, iitSnakeDirections, $interval) {
         }
         return grid;
     };
-
-    return game;
 }
 /////////////////////////////////////////////////////////////
 //IIT-SNAKE-MODULE
