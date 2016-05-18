@@ -14,10 +14,10 @@
 
     <script type="text/ng-template" id="iitSnakeComponent.html">
         <div ng-keydown="vm.onKeypress($event)"  tabindex="0">
-            <div class="iit-snake-row" ng-repeat="row in vm.iitSnakeGame.grid">
-                <iit-snake-cell ng-repeat="status in row track by $index" status="status"></iit-snake-cell>
-            </div>
-            <iit-snake-commands></iit-snake-commands>
+        <div class="iit-snake-row" ng-repeat="row in vm.iitSnakeGame.grid">
+        <iit-snake-cell ng-repeat="status in row track by $index" status="status"></iit-snake-cell>
+        </div>
+        <iit-snake-commands></iit-snake-commands>
         </div>
 
     </script>
@@ -33,8 +33,8 @@
             <hr>
             <div>
                 <form ng-submit="vm.apply()">
-                    ROWS: <input type="text" ng-model="vm.configs.rows"> 
-                    COLS: <input type="text" ng-model="vm.configs.cols">
+                    ROWS: <input type="number" min="10" max="100" ng-model="vm.configs.rows"> 
+                    COLS: <input type="number" min="10" max="100" ng-model="vm.configs.cols">
                     <select ng-model="vm.configs.difficulty" ng-options="d.value as d.label for d in vm.difficultyList"></select>
                     <button type="submit">Apply</button>
                 </form>

@@ -4,8 +4,7 @@
 var iitSnakeComponent = {
     templateUrl: 'iitSnakeComponent.html',
     controller: iitSnakeController,
-    controllerAs: 'vm',
-    transclude: true
+    controllerAs: 'vm'
 };
 
 function iitSnakeController(iitSnakeGame, iitSnakeDirections) {
@@ -32,19 +31,11 @@ function iitSnakeController(iitSnakeGame, iitSnakeDirections) {
 /////////////////////////////////////////////////////////////
 var iitSnakeCellComponent = {
     templateUrl: 'iitSnakeCellComponent.html',
-    controller: iitSnakeCellController,
     controllerAs: 'vm',
-    transclude: true,
     bindings: {
         status: '<'
     }
 };
-
-function iitSnakeCellController(iitSnakeCellStatuses) {
-    var vm = this;
-    vm.status = iitSnakeCellStatuses.EMPTY;
-}
-
 
 /////////////////////////////////////////////////////////////
 //IIT-SNAKE-CONFIG-COMPONENT
@@ -76,8 +67,12 @@ function iitSnakeCommandsController(iitSnakeGame) {
     };
 
     function apply() {
+        var difficulty = vm.configs.difficulty;
+        var rows = parseInt(vm.configs.rows, 10);
+        var cols = parseInt(vm.configs.cols, 10);
         iitSnakeGame.stop();
-        iitSnakeGame.init(vm.configs.rows, vm.configs.cols, vm.configs.difficulty);
+        iitSnakeGame.init(rows, cols, difficulty);
+        iitSnakeGame.start();
     }
     function start() {
         iitSnakeGame.stop();
@@ -133,8 +128,8 @@ function iitSnakeGame(iitSnakeCellStatuses, iitSnakeDirections, $interval) {
     };
     game.init = function (rows, cols, difficulty) {
         game.difficulty = difficulty;
-        game.rows = parseInt(rows);
-        game.cols = parseInt(cols);
+        game.rows = rows;
+        game.cols = cols;
         game.food = game.getRandomFood();
         game.grid = game.createGrid(rows, cols);
 
@@ -145,8 +140,6 @@ function iitSnakeGame(iitSnakeCellStatuses, iitSnakeDirections, $interval) {
         game.drawSnake();
         game.drawFood();
         game.execution = undefined;
-        game.start();
-        console.log(game);
     };
 
     game.start = function () {
